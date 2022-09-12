@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 
 	"github.com/Delaram-Gholampoor-Sagha/proto-buf_GRPC/greet/greetpb"
@@ -28,10 +29,12 @@ func main() {
 
 	doUnary(c)
 
+	doServerStreaming(c)
+
 }
 
 func doUnary(c greetpb.GreetServiceClient) {
-	fmt.Printf("starting to doa unary RPC ...")
+	fmt.Printf("starting to do a unary RPC ...")
 	req := &greetpb.GreetRequest{
 		Greeting: &greetpb.Greeting{
 			FirstName: "delaram",
@@ -44,4 +47,32 @@ func doUnary(c greetpb.GreetServiceClient) {
 		log.Fatalf("error while calling greet RPC: %v", err)
 	}
 	log.Print("Response from Greet: %v ", res.Result)
+}
+
+
+func doServerStreaming(c greetpb.GreetServiceClient) {
+	fmt.Printf("starting to do a unary RPC ...")
+      req := &greetpb.GreetManyTimesRequest{
+		Greeting: &greetpb.Greeting{ 
+           FirstName: "Omid",
+		   LastName: "Hekayati",
+		},
+	  }
+	resStream , err := c.GreetMnayTimes(context.Background() , req )
+
+	if err != nil {
+		log.Fatalf("error while calling GreetManyTimes RPC: %v" , err)
+	}
+
+	for {
+		msg , err := resStream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("error while reading stream: %v" , err)
+		}
+		log.Printf("Response from GreetManyTimes: %v" , msg.GetResult())
+	}
+
 }
