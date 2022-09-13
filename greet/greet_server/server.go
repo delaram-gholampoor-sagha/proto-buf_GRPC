@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"strconv"
@@ -27,10 +28,10 @@ func (*server) Greet(ctx context.Context, req *greetpb.GreetRequest) (*greetpb.G
 	return res, nil
 }
 
-func (*server) GreetManyTimes(req *greetpb.GreetManyTimesRequest , stream greetpb.GreetService_GreetMnayTimesServer) error {
+func (*server) GreetManyTimes(req *greetpb.GreetManyTimesRequest, stream greetpb.GreetService_GreetMnayTimesServer) error {
 	fmt.Printf("GreetManytimes function was invoked with\n %v", req)
 	firstName := req.GetGreeting().GetFirstName()
-	for i := 0 ; i < 10 ; i++ {
+	for i := 0; i < 10; i++ {
 		result := "Hello " + firstName + "number " + strconv.Itoa(i)
 		res := &greetpb.GreetManyTimesResponse{
 			Result: result,
@@ -40,6 +41,26 @@ func (*server) GreetManyTimes(req *greetpb.GreetManyTimesRequest , stream greetp
 		time.Sleep(1000 * time.Millisecond)
 	}
 	return nil
+}
+
+func (*server) LongGreet(stream greetpb.GreetService_LongGreetServer) error {
+	fmt.Printf("LongGreet function was invoked with a streaming request\n")
+	result := ""
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			// we have finished reading the client stream
+			return stream.SendAndClose(&greetpb.LongGreetResponse{
+				Result: result,
+			})
+		}
+		if err != nil {
+			log.Fatalf("Error while reading client stream: %v", err)
+		}
+
+		firstName := req.GetGreeting().GetFirstName()
+		result += "Hello " + firstName + "! "
+	}
 }
 
 func main() {
