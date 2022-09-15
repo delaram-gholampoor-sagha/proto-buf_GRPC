@@ -11,6 +11,15 @@ import (
 	"google.golang.org/grpc"
 )
 
+// Error Codes Documentation : https:
+//grpc.io/docs/guides/error.html
+// Errors Sample Code : http:
+//avi.im/grpc-errors
+// Deadlines Doc : https:
+//grpc.io/blog/deadlines
+// Code Samples for Security : https:
+//grpc.io/docs/guides/auth.html
+
 // protoc --go_out=. --go_opt=paths=source_relative     --go-grpc_out=. --go-grpc_opt=paths=source_relative     greet/greetpb/greet.proto
 
 // https://github.com/techschool/pcbook-go/issues/3
