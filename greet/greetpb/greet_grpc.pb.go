@@ -126,7 +126,7 @@ func (c *greetServiceClient) GreetEveryone(ctx context.Context, opts ...grpc.Cal
 
 type GreetService_GreetEveryoneClient interface {
 	Send(*GreetEveryOneRequest) error
-	CloseAndRecv() (*GreetEveryOneResponse, error)
+	Recv() (*GreetEveryOneResponse, error)
 	grpc.ClientStream
 }
 
@@ -138,10 +138,7 @@ func (x *greetServiceGreetEveryoneClient) Send(m *GreetEveryOneRequest) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *greetServiceGreetEveryoneClient) CloseAndRecv() (*GreetEveryOneResponse, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
+func (x *greetServiceGreetEveryoneClient) Recv() (*GreetEveryOneResponse, error) {
 	m := new(GreetEveryOneResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -263,7 +260,7 @@ func _GreetService_GreetEveryone_Handler(srv interface{}, stream grpc.ServerStre
 }
 
 type GreetService_GreetEveryoneServer interface {
-	SendAndClose(*GreetEveryOneResponse) error
+	Send(*GreetEveryOneResponse) error
 	Recv() (*GreetEveryOneRequest, error)
 	grpc.ServerStream
 }
@@ -272,7 +269,7 @@ type greetServiceGreetEveryoneServer struct {
 	grpc.ServerStream
 }
 
-func (x *greetServiceGreetEveryoneServer) SendAndClose(m *GreetEveryOneResponse) error {
+func (x *greetServiceGreetEveryoneServer) Send(m *GreetEveryOneResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -310,6 +307,7 @@ var GreetService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "GreetEveryone",
 			Handler:       _GreetService_GreetEveryone_Handler,
+			ServerStreams: true,
 			ClientStreams: true,
 		},
 	},
