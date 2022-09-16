@@ -10,6 +10,14 @@ import (
 	"google.golang.org/grpc"
 )
 
+
+// https://jbrandhorst.com/post/gogoproto/
+// https://github.com/gogo/protobuf
+// https://github.com/grpc-ecosystem/awesome-grpc
+// https://github.com/grpc-ecosystem
+// https://github.com/grpc/grpc-go/blob/master/Documentation/server-reflection-tutorial.md
+// https://github.com/ktr0731/evans
+
 func main() {
 
 	fmt.Println("Blog Client")
